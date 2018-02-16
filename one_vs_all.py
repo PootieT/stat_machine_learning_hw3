@@ -26,13 +26,18 @@ class one_vs_allLogisticRegressor:
         
         m,dim = X.shape
         theta_opt = np.zeros((dim,len(self.labels)))
-
+        print theta_opt.shape
         ###########################################################################
         # Compute the K logistic regression classifiers                           #
         # TODO: 7-9 lines of code expected                                        #
         ###########################################################################
-
-
+        for i in range(len(self.labels)):
+        	model = linear_model.LogisticRegression(penalty='l2',C=reg, solver='lbfgs',)
+        	y_temp = [int(j == i) for j in y]
+        	model.fit(X,y_temp)
+        	# param = model.coef_
+        	# print param
+        	theta_opt[:,i] = model.coef_
         ###########################################################################
         #                           END OF YOUR CODE                              #
         ###########################################################################
@@ -57,8 +62,10 @@ class one_vs_allLogisticRegressor:
         # Compute the predicted outputs for X                                     #
         # TODO: 1-2 lines of code expected                                        #
         ###########################################################################
-
-
+        y_pred_percent = np.array([np.dot(X, self.theta[:,i].T) for i in range(self.theta.shape[1])])
+        y_pred = np.argmax(y_pred_percent, axis = 0)
+        print "y_pred is", y_pred.shape, "y_pred T is ", y_pred.T.shape
+        # y_pred = np.array([i == max(y_pred_percent) for i in y_pred_percent[,]])
         ###########################################################################
         #                           END OF YOUR CODE                              #
         ###########################################################################
