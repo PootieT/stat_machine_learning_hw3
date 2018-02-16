@@ -32,7 +32,7 @@ class one_vs_allLogisticRegressor:
         # TODO: 7-9 lines of code expected                                        #
         ###########################################################################
         for i in range(len(self.labels)):
-        	model = linear_model.LogisticRegression(penalty='l2',C=reg, solver='lbfgs',)
+        	model = linear_model.LogisticRegression(penalty='l2',C=1.0/reg, fit_intercept=False, solver='lbfgs',)
         	y_temp = [int(j == i) for j in y]
         	model.fit(X,y_temp)
         	# param = model.coef_
@@ -64,7 +64,7 @@ class one_vs_allLogisticRegressor:
         ###########################################################################
         y_pred_percent = np.array([np.dot(X, self.theta[:,i].T) for i in range(self.theta.shape[1])])
         y_pred = np.argmax(y_pred_percent, axis = 0)
-        print "y_pred is", y_pred.shape, "y_pred T is ", y_pred.T.shape
+        # print "y_pred is", y_pred.shape, "y_pred T is ", y_pred.T.shape
         # y_pred = np.array([i == max(y_pred_percent) for i in y_pred_percent[,]])
         ###########################################################################
         #                           END OF YOUR CODE                              #
