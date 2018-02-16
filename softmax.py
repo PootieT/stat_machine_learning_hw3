@@ -27,8 +27,24 @@ def softmax_loss_naive(theta, X, y, reg):
   # careful here, it is easy to run into numeric instability. Don't forget    #
   # the regularization term!                                                  #
   #############################################################################
+  dummy, K = np.shape(theta)
 
+  for i in range(m):
+    temp = np.dot(theta.T, X[i,:])
+    temp = np.exp(temp - np.ones_like(temp) * np.amax(temp))
+    temp_sum = 0
+    for j in range(len(temp)):
+      temp_sum += temp[j]
+    J += -1.0 / float(m) * np.log(temp[y[i]] / temp_sum)
+    for k in range(K):
+      grad[:,k] += -1.0 / float(m) * ( int(y[i]==k) - (temp[k] / temp_sum) )  * X[i,:] 
 
+  for j in range(dim):
+    for k in range(1, K):
+      J += reg * theta[j,k]**2 / (2.0 * m)
+  
+  for k in range(K):
+    grad[:,k] += reg / float(m) * theta[:,k]
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -53,8 +69,19 @@ def softmax_loss_vectorized(theta, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization term!                                                      #
   #############################################################################
+  dummy, K = np.shape(theta)
+  temp = np.matmul(X, theta)
+  #print(np.shape(temp), np.shape(np.amax(temp,axis=1)))
+  #temp = np.exp(temp - np.tile(np.amax(temp, axis=1), (K,1)).T)
+  temp = np.exp((temp.T - np.amax(temp, axis=1)).T)
+  sums = np.sum(temp, axis=1)
+  probs = (temp.T / sums).T
+  J += -1 / float(m) * np.sum(np.log(probs[range(m), y])) 
+  J += reg / (2.0*m) * np.sum(np.square(theta[:,1:]))
 
-
+  indicator = np.zeros(np.shape(probs))
+  indicator[range(m), y] = 1.0
+  grad += -1.0 / float(m) * ( np.matmul(X.T,(indicator - probs)) ) + reg / float(m) * theta
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
