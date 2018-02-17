@@ -7,7 +7,7 @@ class LinearClassifier:
     self.theta = None
 
   def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
-            batch_size=200, verbose=False):
+            batch_size=200, verbose=False, term=False):
     """
     Train this linear classifier using stochastic gradient descent.
 
@@ -58,6 +58,8 @@ class LinearClassifier:
 
       # evaluate loss and gradient
       loss, grad = self.loss(X_batch, y_batch, reg)
+      if term and np.linalg.norm(grad) < 10e-6:
+        break
       loss_history.append(loss)
 
       # perform parameter update
@@ -72,7 +74,7 @@ class LinearClassifier:
       #########################################################################
 
       if verbose and it % 100 == 0:
-        print 'iteration %d / %d: loss %f' % (it, num_iters, loss)
+        print 'iteration %d / %d: loss %f grad: %f' % (it, num_iters, loss, np.linalg.norm(grad))
 
     return loss_history
 
